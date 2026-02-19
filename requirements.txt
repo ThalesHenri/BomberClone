@@ -1,0 +1,17 @@
+# ===============================================================================
+# TH SISTEMAS - REQUISITOS DE AMBIENTE (PROTOCOLO WEBSOCKET)
+# ===============================================================================
+
+# Pygame
+pygame==2.6.1
+
+# Motor Gráfico
+pygame-ce==2.5.6       
+
+# Protocolo de Comunicação Moderna
+websockets==16.0
+
+# Auxiliar para processamento assíncrono
+asyncio>=4.0.0
+
+

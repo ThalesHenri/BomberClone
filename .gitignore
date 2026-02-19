@@ -1,0 +1,30 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+dist/
+
+# --- IDEs / Editores ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Sistema Operacional ---
+.DS_Store
+Thumbs.db
+
+# --- Logs e Dados Temporários ---
+*.log
+crash_dump.json
+
+# --- Assets (Opcional) ---
+# Se você quiser que as pessoas baixem os assets separadamente
+# ou se tiver arquivos muito grandes (.wav, .png pesados)
+# assets/large_files/

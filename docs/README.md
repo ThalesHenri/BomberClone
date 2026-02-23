@@ -70,5 +70,7 @@ python client/main.py --connect 127.0.0.1
     Status do Projeto: Versão Beta (Funcionalidades básicas de movimento e bomba).
 
     Limitação Conhecida: Latência acima de 200ms pode causar "Ghosting" nos sprites.
+    
+    Créditos ao Youtuber S3GA SOUNDS pelo remake da música "Mr. Crowley" do lendário Ozzy Ousbourne usado no projeto
 
 © 2026 TH SISTEMAS - O CONHECIMENTO LIBERTA!

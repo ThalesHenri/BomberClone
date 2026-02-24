@@ -1,5 +1,6 @@
 import pygame
 from public.settings import *
+from .bomb import Bomb
 
 class Player(pygame.sprite.Sprite):
     
@@ -10,7 +11,7 @@ class Player(pygame.sprite.Sprite):
         self.color = color
         self.sheet = pygame.image.load('src/assets/chars.png').convert_alpha()
         self.speed = PLAYER_SPEED
-        self.bombs = 3
+        self.bombs:int = 3
         self.current_direction = "down"
         self.frame_index = 0
         self.bombs_placed = 0
@@ -123,13 +124,14 @@ class Player(pygame.sprite.Sprite):
         return False
     
     
-    def place_bomb(self)->None:
+    def place_bomb(self)->Bomb:
         if self.bombs_placed < self.bombs:
             # Permissao para colocar bomba
             self.bombs_placed += 1
             print(f"Placou bomba {self.bombs_placed}")
+            bomb = Bomb(self.x, self.y)
             
-            return True
+            return bomb
         else:
             return False
         

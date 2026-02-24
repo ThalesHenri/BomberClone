@@ -1,6 +1,7 @@
 import sys
 import os
 
+
 # Add the path for the game
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

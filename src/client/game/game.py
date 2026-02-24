@@ -51,6 +51,7 @@ class Game:
         # --- Player e afins ---
         self.player:Player = Player((self.offset_x + 50, self.offset_y + 50),(255,0,0),(self.offset_x, self.offset_y)) #inicializando Zerado
         self.map_data:list = None
+        self.bombs:list[Bomb] = []
         
     def run(self)->None:
         while self.running:
@@ -100,6 +101,8 @@ class Game:
         if self.match_running:
             self._draw_map(self.grid)
             self._draw_player()
+            for bomb in self.bombs:
+                bomb.draw(self.screen)
             
             pygame.display.flip()
             
@@ -133,8 +136,6 @@ class Game:
                             self.close()
         # --- Lidar com os eventos da partida ---
             if self.match_running:
-                if event.type == pygame.QUIT:
-                    self.close()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_r:
                         self.grid = self._generate_map() 
@@ -145,11 +146,18 @@ class Game:
                         pygame.mixer.music.stop()
                         self.match_running = False
                         self.menu_running = True
-                    if event.key == pygame.K_SPACE:
-                        result = self.player.place_bomb()
-                        if result:
-                            self._draw_bomb()
-                    
+                    if event.key == pygame.K_b:
+                        already_bomb = any([bomb.rect.topleft == (self.player.x, self.player.y) for bomb in self.bombs])
+                        if already_bomb:
+                            print("ja tem bomba")
+                        else:
+                            bomb = self.player.place_bomb()
+                            if bomb:
+                                self.bombs.append(bomb)
+                                print("bomba colocada")
+                                print(f"bomba colocada na posicao {self.player.x},{self.player.y} Numero da bomba- {self.player.bombs_placed}")
+                        
+                        
                                                
         # Dividndo para ficar mais legivel
        
@@ -179,9 +187,7 @@ class Game:
              
              
     def _draw_bomb(self):
-        bomb = Bomb((self.player.x, self.player.y), (self.player.offset_x, self.player.offset_y))
-        bomb.draw(self.screen)
-        pygame.display.update()
+       pass
     
                             
     def _generate_map(self) -> list:

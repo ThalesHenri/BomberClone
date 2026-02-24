@@ -11,7 +11,7 @@ class Player(pygame.sprite.Sprite):
         self.color = color
         self.sheet = pygame.image.load('src/assets/chars.png').convert_alpha()
         self.speed = PLAYER_SPEED
-        self.bombs:int = 3
+        self.bombs:int = 1
         self.current_direction = "down"
         self.frame_index = 0
         self.bombs_placed = 0
@@ -36,13 +36,15 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         
         self.anim_speed = 0.15
-    def move(self,dx:int,dy:int,game_map:list,direction:int)->None:
+    def move(self,dx:int,dy:int,game_map:list,direction:int, bombs:list)->None:
         """Defines the movements of the player in the field
 
         Args:
             dx (int): x
             dy (int): y
             game_map (list): map of the game
+            direction (int): 0: up, 1: right, 2: down, 3: left
+
         """
         moving = False
         
@@ -63,11 +65,11 @@ class Player(pygame.sprite.Sprite):
         
         
        # Movimento Horizontal
-        self.x += dx * self.speed  # Agora ele move, por exemplo, 4 pixels de uma vez
+        self.x += dx * self.speed  # Movimento horizontal 4 pixels de uma vez
         self.rect.x = self.x
         
         
-        if self.check_collision(game_map):
+        if self._check_collision(game_map) or self._check_bomb_collision(bombs):
             self.x -= dx * self.speed
             self.rect.x = self.x
 
@@ -75,7 +77,7 @@ class Player(pygame.sprite.Sprite):
         self.y += dy * self.speed
         self.rect.y = self.y
         
-        if self.check_collision(game_map):
+        if self._check_collision(game_map) or self._check_bomb_collision(bombs):
             self.y -= dy * self.speed
             self.rect.y = self.y
     
@@ -102,7 +104,7 @@ class Player(pygame.sprite.Sprite):
         
     
            
-    def check_collision(self, game_map)->bool:
+    def _check_collision(self, game_map)->bool:
         # Transforma a posição de pixel do player de volta para índice da matriz
         # (Subtraímos o offset para saber a posição relativa ao grid)
         grid_x = (self.rect.centerx - self.offset_x) // TILE_SIZE
@@ -122,18 +124,42 @@ class Player(pygame.sprite.Sprite):
                         if self.rect.colliderect(wall_rect):
                             return True
         return False
+
+    
+    def _check_bomb_collision(self,bombs:list)->bool:
+        """check if there is a collision between the 
+            player and the bomb
+
+        Args:
+            bombs (list): self.bombs
+
+        Returns:
+            bool: if there is a collision
+        """
+        for bomb in bombs:
+            if bomb.is_solid:
+                if self.rect.colliderect(bomb.rect):
+                    return True
+        return False 
     
     
-    def place_bomb(self)->Bomb:
+    def place_bomb(self,)->Bomb:
         if self.bombs_placed < self.bombs:
             # Permissao para colocar bomba
             self.bombs_placed += 1
             print(f"Placou bomba {self.bombs_placed}")
-            bomb = Bomb(self.x, self.y)
+            bomb = Bomb(self.x, self.y,self)
             
             return bomb
         else:
             return False
+        
+        
+        
+    def reset_bombs(self)->None:
+        self.bombs = 1
+        self.bombs_placed = 0
+        
         
 
     

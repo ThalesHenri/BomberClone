@@ -3,7 +3,7 @@ import sys
 from public.settings import *
 from .player import Player
 import random
-from .bomb import Bomb
+from .bomb import Bomb, Explosion
 
 """
 Este script deve ter:
@@ -52,6 +52,7 @@ class Game:
         self.player:Player = Player((self.offset_x + 50, self.offset_y + 50),(255,0,0),(self.offset_x, self.offset_y)) #inicializando Zerado
         self.map_data:list = None
         self.bombs:list[Bomb] = []
+        self.explosions:list[Explosion] = []
         
     def run(self)->None:
         while self.running:
@@ -103,6 +104,16 @@ class Game:
             self._draw_player()
             for bomb in self.bombs:
                 bomb.draw(self.screen)
+                bomb.update()
+                self._explode_bomb()
+                
+            for explosion in self.explosions:
+                explosion.draw(self.screen)
+                explosion.update(self.grid)
+                self._explode_explosion()
+            
+                #self.player.get_more_bombs()
+                
             
             pygame.display.flip()
             
@@ -166,16 +177,16 @@ class Game:
             direction = 0
             if pygame.key.get_pressed()[pygame.K_LEFT]:
                 direction = 3
-                self.player.move(-1, 0,self.grid,direction)
+                self.player.move(-1, 0,self.grid,direction,self.bombs)
             if pygame.key.get_pressed()[pygame.K_RIGHT]:
                 direction = 1
-                self.player.move(1, 0,self.grid,direction)
+                self.player.move(1, 0,self.grid,direction,self.bombs)
             if pygame.key.get_pressed()[pygame.K_UP]:
                 direction = 0
-                self.player.move(0, -1,self.grid,direction)
+                self.player.move(0, -1,self.grid,direction,self.bombs)
             if pygame.key.get_pressed()[pygame.K_DOWN]:
                 direction = 2
-                self.player.move(0, 1,self.grid, direction)
+                self.player.move(0, 1,self.grid,direction,self.bombs)
                 
                 
                         
@@ -186,8 +197,25 @@ class Game:
                             
              
              
-    def _draw_bomb(self):
-       pass
+    def _explode_bomb(self):
+        for bomb in self.bombs:
+            if bomb.expired:
+                explosion = bomb.explode(grid=self.grid)
+                self.explosions.append(explosion)
+                self.bombs.remove(bomb)
+                self.player.reset_bombs()
+                
+                
+    def _explode_explosion(self):
+        for explosion in self.explosions:
+            if explosion.expired:
+                self.explosions.remove(explosion)
+    
+   
+                
+    
+    
+    
     
                             
     def _generate_map(self) -> list:
@@ -207,7 +235,7 @@ class Game:
                     
                 # Tijolos destrutíveis (Lógica de chance e proteção dos cantos)
                 else:
-                    # Sua lógica de proteção dos 4 cantos está ótima!
+                  
                     nao_nos_cantos = not(
                         (row <= 2 and col <= 2) or 
                         (row >= GRID_HEIGHT - 3 and col <= 2) or 
@@ -226,13 +254,11 @@ class Game:
 
         for row_index, row in enumerate(grid):
             for col_index, cell in enumerate(row):
-                # A mágica acontece aqui: somamos o offset no X e no Y
+               
                 x = self.offset_x + (col_index * TILE_SIZE)
                 y = self.offset_y + (row_index * TILE_SIZE)
                 rect = (x, y, TILE_SIZE, TILE_SIZE)
                 
-                # Desenha o chão de grama para todas as células do grid
-                # (Fica melhor do que desenhar grama só onde está vazio)
                 pygame.draw.rect(self.screen, COLOR_BG, rect)
 
                 if cell == BLOCK_WALL:
@@ -241,3 +267,4 @@ class Game:
                 elif cell == BLOCK_BRICK:
                     pygame.draw.rect(self.screen, COLOR_BRICK, rect)
                     pygame.draw.rect(self.screen, (0, 0, 0), rect, 1)
+        

@@ -16,6 +16,10 @@ BLOCK_BRICK = 2
 SCREEN_WIDTH = 1200#TILE_SIZE * GRID_WIDTH
 SCREEN_HEIGHT = 800#TILE_SIZE * GRID_HEIGHT
 SCREEN_TITLE = "Bomberman - TH Sistemas"
+MAP_PIXEL_WIDTH = TILE_SIZE * GRID_WIDTH
+MAP_PIXEL_HEIGHT = TILE_SIZE * GRID_HEIGHT
+OFFSET_X = (SCREEN_WIDTH - MAP_PIXEL_WIDTH) // 2
+OFFSET_Y = (SCREEN_HEIGHT - MAP_PIXEL_HEIGHT) // 2
 
 # --- CORES RGB ---
 COLOR_BG = (54, 53, 53)      # Fundo Escuro
@@ -28,5 +32,7 @@ COLOR_BOMB = (255, 0, 0)     # Vermelho Perigo
 FPS = 60                     # Frames por segundo
 BOMB_TIMER = 3000            # Milissegundos para explodir (3 seg)
 PLAYER_SPEED = 4            # Pixels por frame
+ENEMY_SPEED = 2             # Pixels por frame
+ENEMIES = 4                 # Quantidade de inimigos na arena
 MUSIC_GAME ="src/assets/MrCrowley8Bits.mp3"
 MUSIC_VOLUME = 0.5

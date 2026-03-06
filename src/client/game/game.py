@@ -1,8 +1,9 @@
 import pygame
 import sys
 from public.settings import *
-from .player import Player
 import random
+from .player import Player
+from .enemy import Enemy
 from .bomb import Bomb, Explosion
 
 """
@@ -36,10 +37,10 @@ class Game:
         
         # --- Inicializando o mapa ---
         self.grid = None
-        self.map_pixel_width = GRID_WIDTH * TILE_SIZE
-        self.map_pixel_height = GRID_HEIGHT * TILE_SIZE
-        self.offset_x = (SCREEN_WIDTH - self.map_pixel_width) // 2
-        self.offset_y = (SCREEN_HEIGHT - self.map_pixel_height) // 2
+        self.map_pixel_width = MAP_PIXEL_WIDTH
+        self.map_pixel_height = MAP_PIXEL_HEIGHT
+        self.offset_x = OFFSET_X
+        self.offset_y = OFFSET_Y
         
         # --- Inicializando o menu ---
         self.menu_running = True
@@ -50,6 +51,7 @@ class Game:
     
         # --- Player e afins ---
         self.player:Player = Player((self.offset_x + 50, self.offset_y + 50),(255,0,0),(self.offset_x, self.offset_y)) #inicializando Zerado
+        self.enemies:list[Enemy] = []
         self.map_data:list = None
         self.bombs:list[Bomb] = []
         self.explosions:list[Explosion] = []
@@ -102,6 +104,7 @@ class Game:
         if self.match_running:
             self._draw_map(self.grid)
             self._draw_player()
+            self._draw_enemy()
             for bomb in self.bombs:
                 bomb.draw(self.screen)
                 bomb.update()
@@ -112,7 +115,7 @@ class Game:
                 explosion.update(self.grid)
                 self._explode_explosion()
             
-                #self.player.get_more_bombs()
+                
                 
             
             pygame.display.flip()
@@ -140,6 +143,7 @@ class Game:
                         if self.menu_index == 0 :# offline
                             self.match_running = True
                             self.grid = self._generate_map()
+                            self._get_enemies()
                             self.menu_running = False
                         elif self.menu_index == 1 :# online
                             print("online")
@@ -168,6 +172,7 @@ class Game:
                                 print("bomba colocada")
                                 print(f"bomba colocada na posicao {self.player.x},{self.player.y} Numero da bomba- {self.player.bombs_placed}")
                         
+     
                         
                                                
         # Dividndo para ficar mais legivel
@@ -188,13 +193,30 @@ class Game:
                 direction = 2
                 self.player.move(0, 1,self.grid,direction,self.bombs)
                 
-                
-                        
+    def _get_enemies(self):
+        for _ in range(ENEMIES):
+            attempts = 0
+            while attempts < 100:
+                row = random.randint(0, GRID_HEIGHT - 1)
+                col = random.randint(0, GRID_WIDTH - 1)
+                if self.grid[row][col] == BLOCK_EMPTY:
+                    x = self.offset_x + col * TILE_SIZE
+                    y = self.offset_y + row * TILE_SIZE
+                    enemy = Enemy((x, y), (self.offset_x, self.offset_y))
+                    self.enemies.append(enemy)
+                    break
+                attempts += 1         
 
 
-    def _draw_player(self):
+    
+    def _draw_player(self):  
         self.player.draw(self.screen)
                             
+
+    def _draw_enemy(self):
+        for enemy in self.enemies:
+            enemy.update(self.grid, self.bombs)
+            enemy.draw(self.screen)
              
              
     def _explode_bomb(self):
